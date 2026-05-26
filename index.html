@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOAT League University</title>
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <style>
+    /* ─── Hero ─── */
+    .hero {
+      position: relative;
+      padding: 3.5rem 0 2.5rem;
+      overflow: hidden;
+    }
+    .hero-eyebrow {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      letter-spacing: .04em;
+      line-height: .95;
+      margin-bottom: 1rem;
+    }
+    .hero-title em { color: var(--accent); font-style: normal; }
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--text-2);
+      max-width: 500px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .hero-bg {
+      position: absolute;
+      top: -2rem; right: -4rem;
+      font-size: 18rem;
+      opacity: .03;
+      pointer-events: none;
+      line-height: 1;
+      font-family: var(--font-display);
+      letter-spacing: -.05em;
+    }
+    .hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+
+    /* ─── FKS Card ─── */
+    .fks-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    .fks-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+    .fks-score-big {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .fks-level-badge {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: .3rem .7rem;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+    .fks-bar-wrap { margin-top: .75rem; }
+    .fks-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: .7rem;
+      color: var(--text-3);
+      margin-bottom: .35rem;
+    }
+
+    /* ─── Quick stats ─── */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ─── Pack CTA ─── */
+    .pack-cta {
+      background: linear-gradient(135deg, #1a1400 0%, var(--bg-2) 100%);
+      border: 1px solid rgba(240,165,0,.25);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .pack-cta-info h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: .04em;
+      margin-bottom: .25rem;
+    }
+    .pack-cta-info p { font-size: .85rem; color: var(--text-2); }
+    .pack-cta-timer {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      color: var(--text-3);
+      margin-top: .5rem;
+    }
+
+    /* ─── Recent cards ─── */
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: .75rem;
+    }
+
+    /* ─── GOAT snapshot ─── */
+    .goat-snapshot {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .goat-snapshot h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .05em;
+      margin-bottom: 1rem;
+    }
+    .goat-leader {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .6rem .8rem;
+      background: var(--bg-3);
+      border-radius: var(--radius);
+      margin-bottom: .4rem;
+    }
+    .goat-rank {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: var(--text-3);
+      width: 1.2rem;
+      text-align: center;
+    }
+    .goat-rank-1 { color: var(--accent); font-weight: 700; }
+    .goat-leader-name { flex: 1; font-weight: 600; font-size: .9rem; }
+    .goat-leader-pct { font-family: var(--font-mono); font-size: .8rem; color: var(--text-2); }
+    .goat-bar-row { margin-top: .2rem; }
+    .goat-mini-bar {
+      height: 3px;
+      background: var(--bg-3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: .15rem;
+    }
+    .goat-mini-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width .8s ease;
+    }
+  </style>
+  <meta name="description" content="Collect historical football cards, build your knowledge score, and vote for the Greatest of All Time.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GOAT League University">
+  <meta property="og:title" content="GOAT League University — Discover Football History">
+  <meta property="og:description" content="Collect historical football cards, build your knowledge score, and vote for the Greatest of All Time.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GOAT League University — Discover Football History">
+  <meta name="twitter:description" content="Collect historical football cards, build your knowledge score, and vote for the Greatest of All Time.">
+</head>
+<body class="page">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-brand">⚽ GOAT<span>League</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="collection.html" class="nav-link">Collection</a></li>
+      <li><a href="vote.html" class="nav-link">Vote</a></li>
+      <li><a href="leaderboard.html" class="nav-link">Leaderboard</a></li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+
+    <!-- Hero -->
+    <section class="hero fade-up">
+      <div class="hero-bg">🐐</div>
+      <p class="hero-eyebrow">Discover Football History</p>
+      <h1 class="hero-title">Who is the<br><em>Greatest?</em></h1>
+      <p class="hero-sub">Collect historical cards, build your knowledge, and cast an informed vote. Your opinion carries weight — earned, not given.</p>
+      <div class="hero-actions">
+        <a href="collection.html" class="btn btn-primary">Open Packs</a>
+        <a href="vote.html" class="btn btn-ghost">Cast Your Vote</a>
+      </div>
+    </section>
+
+    <!-- FKS Card -->
+    <div class="fks-card fade-up" style="animation-delay:.1s">
+      <div class="fks-card-header">
+        <div>
+          <div class="text-dim mono" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem">Your Knowledge Score</div>
+          <div class="fks-score-big fks-score">0</div>
+        </div>
+        <div class="fks-level-badge fks-level">⚽ Rookie Fan</div>
+      </div>
+      <div class="fks-bar-wrap">
+        <div class="fks-bar-meta">
+          <span>Progress to next level</span>
+          <span id="fks-next-label">50 pts needed</span>
+        </div>
+        <div class="fks-bar"><div class="fks-bar-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="quick-stats fade-up" style="animation-delay:.15s">
+      <div class="stat-chip">
+        <div class="stat-chip-value" id="stat-cards">0</div>
+        <div class="stat-chip-label">Cards</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-value" id="stat-trivia">0</div>
+        <div class="stat-chip-label">Trivia ✓</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-value" id="stat-players">0</div>
+        <div class="stat-chip-label">Players</div>
+      </div>
+    </div>
+
+    <!-- Pack CTA -->
+    <div class="pack-cta fade-up" style="animation-delay:.2s">
+      <div class="pack-cta-info">
+        <h2>Free Pack Available</h2>
+        <p>Pull 5 cards and earn FKS — a new pack every 6 hours.</p>
+        <div class="pack-cta-timer" id="pack-timer"></div>
+      </div>
+      <a href="collection.html" class="btn btn-primary btn-pull-ready" id="pack-btn">Open Pack →</a>
+    </div>
+
+    <!-- GOAT Snapshot -->
+    <div class="goat-snapshot fade-up" style="animation-delay:.25s">
+      <h3>🐐 Overall GOAT — Live Rankings</h3>
+      <div id="goat-leaders"></div>
+      <a href="leaderboard.html" style="font-size:.8rem;color:var(--text-3);display:inline-block;margin-top:.75rem">Full leaderboard →</a>
+    </div>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-links">
+      <li><a href="index.html" class="bottom-nav-link"><span class="bnl-icon">🏠</span>Home</a></li>
+      <li><a href="collection.html" class="bottom-nav-link"><span class="bnl-icon">📦</span>Collect</a></li>
+      <li><a href="vote.html" class="bottom-nav-link"><span class="bnl-icon">🗳️</span>Vote</a></li>
+      <li><a href="leaderboard.html" class="bottom-nav-link"><span class="bnl-icon">📊</span>Board</a></li>
+      <li><a href="profile.html" class="bottom-nav-link"><span class="bnl-icon">👤</span>Profile</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/fks.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    UI.setActiveNav();
+
+    App.onReady(() => {
+      UI.updateFKSDisplay();
+
+      // Stats
+      const stats = Storage.getStats();
+      const col = Storage.getCollection();
+      const playersSeen = new Set(
+        App.getCards()
+          .filter(c => col[c.id] > 0)
+          .map(c => c.playerId)
+      );
+      document.getElementById('stat-cards').textContent = stats.uniqueCards;
+      document.getElementById('stat-trivia').textContent = stats.triviaCorrect;
+      document.getElementById('stat-players').textContent = playersSeen.size;
+
+      // FKS next level
+      const total = Storage.getFKSTotal();
+      const next = FKS.getNextLevel(total);
+      if (next) {
+        document.getElementById('fks-next-label').textContent = `${next.min - total} pts to ${next.name}`;
+      } else {
+        document.getElementById('fks-next-label').textContent = 'Max level reached!';
+      }
+
+      // Pack timer
+      const packBtn = document.getElementById('pack-btn');
+      const packTimer = document.getElementById('pack-timer');
+      if (!Storage.canOpenPack()) {
+        packBtn.classList.remove('btn-pull-ready');
+        packBtn.style.opacity = '.5';
+        const remaining = Storage.timeUntilNextPack();
+        const endTime = Date.now() + remaining;
+        packTimer.textContent = 'Next pack in: ';
+        const span = document.createElement('span');
+        packTimer.appendChild(span);
+        UI.startCountdown(endTime, span);
+      } else {
+        packTimer.textContent = '✅ Pack ready now!';
+      }
+
+      // GOAT leaders
+      const leaders = App.getCategoryLeaderboard('overall').slice(0, 5);
+      const container = document.getElementById('goat-leaders');
+      leaders.forEach((item, i) => {
+        const row = document.createElement('div');
+        row.className = 'goat-leader';
+        row.innerHTML = `
+          <span class="goat-rank ${i === 0 ? 'goat-rank-1' : ''}">${i+1}</span>
+          <span class="goat-leader-name">${item.player.name}</span>
+          <span class="goat-leader-pct">${item.percent}%</span>
+        `;
+        const barRow = document.createElement('div');
+        barRow.className = 'goat-bar-row';
+        barRow.style.padding = '0 .8rem .4rem 2.2rem';
+        barRow.innerHTML = `<div class="goat-mini-bar"><div class="goat-mini-bar-fill" style="width:${item.percent}%"></div></div>`;
+        container.appendChild(row);
+        container.appendChild(barRow);
+      });
+
+      if (Storage.getVote('overall')) {
+        const userVote = Storage.getVote('overall');
+        const player = App.getPlayer(userVote);
+        if (player) {
+          const note = document.createElement('div');
+          note.style.cssText = 'font-size:.75rem;color:var(--accent);margin-top:.5rem';
+          note.textContent = `Your vote: ${player.name}`;
+          container.appendChild(note);
+        }
+      }
+    });
+  </script>
+  <footer style="text-align:center;padding:1rem 1.5rem 2rem;font-size:.68rem;color:#3a4055;line-height:1.6">
+    Fan project · Educational purposes only · Not affiliated with FIFA, UEFA, any club or player<br>
+    Code: MIT Licence · Content: © 2025 GOAT League University Contributors, all rights reserved
+  </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .catch(e => console.warn("SW registration failed:", e));
+    }
+  </script>
+</body>
+</html>

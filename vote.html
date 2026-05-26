@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote — GOAT League University</title>
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <style>
+    /* ─── Vote weight banner ─── */
+    .weight-banner {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .weight-main {
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+    .weight-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-3);
+    }
+    .weight-value {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .weight-meta { font-size: .78rem; color: var(--text-2); flex: 1; min-width: 180px; }
+    .weight-requirements {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      font-size: .75rem;
+    }
+    .weight-req {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      color: var(--text-3);
+    }
+    .weight-req.met { color: var(--green); }
+    .weight-req-icon { width: 1rem; text-align: center; }
+
+    /* ─── Category tabs ─── */
+    .category-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: .6rem;
+      margin-bottom: 2rem;
+    }
+    .cat-tab {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .8rem 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+    .cat-tab:hover { border-color: var(--border-2); background: var(--bg-3); }
+    .cat-tab.active {
+      border-color: var(--accent);
+      background: rgba(240,165,0,.06);
+    }
+    .cat-tab.voted { border-color: var(--green); }
+    .cat-tab-icon { font-size: 1.4rem; margin-bottom: .3rem; }
+    .cat-tab-name { font-size: .8rem; font-weight: 600; }
+    .cat-tab-voted {
+      font-size: .65rem;
+      color: var(--green);
+      margin-top: .2rem;
+      display: none;
+    }
+    .cat-tab.voted .cat-tab-voted { display: block; }
+    .cat-tab-locked {
+      font-size: .65rem;
+      color: var(--text-3);
+      margin-top: .2rem;
+    }
+
+    /* ─── Vote panel ─── */
+    .vote-panel {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      animation: fadeUp .4s ease both;
+    }
+    .vote-panel-header { margin-bottom: 1.5rem; }
+    .vote-panel-icon { font-size: 2rem; margin-bottom: .4rem; }
+    .vote-panel-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: .04em;
+      margin-bottom: .3rem;
+    }
+    .vote-panel-desc { font-size: .85rem; color: var(--text-2); }
+
+    /* ─── Lock warning ─── */
+    .vote-locked-msg {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      font-size: .85rem;
+      color: var(--text-2);
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .vote-locked-msg.show { display: block; }
+
+    /* ─── Player vote options ─── */
+    .vote-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .75rem;
+      margin-bottom: 1.5rem;
+    }
+    .vote-option {
+      background: var(--bg-3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+    .vote-option:hover { border-color: var(--border-2); transform: translateY(-2px); }
+    .vote-option.selected {
+      border-color: var(--accent);
+      background: rgba(240,165,0,.07);
+    }
+    .vote-option.selected::after {
+      content: '✓';
+      position: absolute;
+      top: .6rem; right: .8rem;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .vote-option.locked-player {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+    .vote-option.locked-player:hover { transform: none; }
+    .vote-opt-nation {
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-3);
+    }
+    .vote-opt-name { font-weight: 700; font-size: 1rem; }
+    .vote-opt-pos { font-size: .72rem; color: var(--text-2); }
+    .vote-opt-era { font-size: .65rem; color: var(--text-3); font-family: var(--font-mono); }
+    .vote-opt-not-owned {
+      font-size: .65rem;
+      color: var(--text-3);
+      background: var(--bg-2);
+      border-radius: 3px;
+      padding: .1rem .3rem;
+      display: inline-block;
+      margin-top: .2rem;
+    }
+
+    /* ─── Current vote summary ─── */
+    .current-vote-summary {
+      background: rgba(240,165,0,.06);
+      border: 1px solid rgba(240,165,0,.2);
+      border-radius: var(--radius);
+      padding: .9rem 1.1rem;
+      font-size: .85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+    .current-vote-summary.show { display: block; }
+    .current-vote-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); margin-bottom: .2rem; }
+    .current-vote-name { color: var(--accent); font-weight: 700; }
+
+    /* ─── Submit button ─── */
+    .vote-submit-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .vote-weight-note {
+      font-size: .78rem;
+      color: var(--text-3);
+    }
+
+    /* ─── My votes summary ─── */
+    .my-votes {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .my-votes h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: 1rem;
+    }
+    .my-vote-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .85rem;
+    }
+    .my-vote-row:last-child { border-bottom: none; }
+    .my-vote-cat { color: var(--text-3); flex: 1.2; font-size: .8rem; }
+    .my-vote-player { font-weight: 600; flex: 1; }
+    .my-vote-change {
+      font-size: .72rem;
+      color: var(--blue);
+      cursor: pointer;
+      padding: .2rem .5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+    .my-vote-change:hover { border-color: var(--accent); color: var(--accent); }
+    .my-votes-empty { font-size: .85rem; color: var(--text-3); }
+  </style>
+  <meta name="description" content="Your vote carries weight based on what you know. Study more players. Earn more influence.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GOAT League University">
+  <meta property="og:title" content="Cast Your Vote — GOAT League University">
+  <meta property="og:description" content="Your vote carries weight based on what you know. Study more players. Earn more influence.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cast Your Vote — GOAT League University">
+  <meta name="twitter:description" content="Your vote carries weight based on what you know. Study more players. Earn more influence.">
+</head>
+<body class="page">
+
+  <nav class="nav">
+    <div class="nav-brand">⚽ GOAT<span>League</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="collection.html" class="nav-link">Collection</a></li>
+      <li><a href="vote.html" class="nav-link">Vote</a></li>
+      <li><a href="leaderboard.html" class="nav-link">Leaderboard</a></li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <h1 class="section-title fade-up">Cast Your Vote</h1>
+    <p class="text-muted fade-up" style="margin-bottom:1.5rem;animation-delay:.05s">
+      Your vote carries weight based on your Football Knowledge Score. Study more players to unlock all categories and increase your influence.
+    </p>
+
+    <!-- Vote weight banner -->
+    <div class="weight-banner fade-up" style="animation-delay:.1s">
+      <div class="weight-main">
+        <div class="weight-label">Your Vote Weight</div>
+        <div class="weight-value" id="vote-weight">0</div>
+      </div>
+      <div class="weight-meta" id="weight-meta">Collect cards from more players to increase your influence in the rankings.</div>
+      <div class="weight-requirements" id="weight-reqs"></div>
+    </div>
+
+    <!-- Category tabs -->
+    <div class="category-tabs fade-up" style="animation-delay:.15s" id="category-tabs"></div>
+
+    <!-- Vote panel (injected) -->
+    <div id="vote-panel-root"></div>
+
+    <!-- My votes summary -->
+    <div class="my-votes fade-up" style="animation-delay:.2s">
+      <h3>My Votes</h3>
+      <div id="my-votes-list"></div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-links">
+      <li><a href="index.html" class="bottom-nav-link"><span class="bnl-icon">🏠</span>Home</a></li>
+      <li><a href="collection.html" class="bottom-nav-link"><span class="bnl-icon">📦</span>Collect</a></li>
+      <li><a href="vote.html" class="bottom-nav-link"><span class="bnl-icon">🗳️</span>Vote</a></li>
+      <li><a href="leaderboard.html" class="bottom-nav-link"><span class="bnl-icon">📊</span>Board</a></li>
+      <li><a href="profile.html" class="bottom-nav-link"><span class="bnl-icon">👤</span>Profile</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/fks.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    UI.setActiveNav();
+    let _activeCategory = null;
+    let _pendingVote = null;
+
+    App.onReady(() => {
+      renderWeightBanner();
+      renderCategoryTabs();
+      renderMyVotes();
+      // Open first category by default
+      const cats = App.getCategories();
+      if (cats.length > 0) openCategory(cats[0].id);
+    });
+
+    function renderWeightBanner() {
+      const fks = Storage.getFKSTotal();
+      const weight = FKS.getVoteWeight(fks, App.getCards());
+      const breadth = FKS.getBreadth(App.getCards());
+
+      document.getElementById('vote-weight').textContent = weight;
+
+      const reqs = [
+        { label: '3+ players collected', met: breadth.players >= 3 },
+        { label: '5+ players for 80% weight', met: breadth.players >= 5 },
+        { label: '7+ players for full weight', met: breadth.players >= 7 },
+      ];
+
+      const metCount = reqs.filter(r => r.met).length;
+      const pct = [30, 60, 80, 100][metCount];
+      document.getElementById('weight-meta').textContent =
+        `${pct}% weight multiplier active. Collect cards from more players to increase your influence.`;
+
+      const reqEl = document.getElementById('weight-reqs');
+      reqEl.innerHTML = reqs.map(r => `
+        <div class="weight-req ${r.met ? 'met' : ''}">
+          <span class="weight-req-icon">${r.met ? '✅' : '○'}</span>
+          ${r.label}
+        </div>
+      `).join('');
+    }
+
+    function renderCategoryTabs() {
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = '';
+      const fks = Storage.getFKSTotal();
+
+      App.getCategories().forEach(cat => {
+        const isLocked = fks < cat.minFKS;
+        const userVote = Storage.getVote(cat.id);
+        const votedPlayer = userVote ? App.getPlayer(userVote) : null;
+
+        const tab = document.createElement('div');
+        tab.className = `cat-tab ${_activeCategory === cat.id ? 'active' : ''} ${votedPlayer ? 'voted' : ''} ${isLocked ? 'locked-player' : ''}`;
+        tab.innerHTML = `
+          <div class="cat-tab-icon">${cat.icon}</div>
+          <div class="cat-tab-name">${cat.name}</div>
+          ${isLocked
+            ? `<div class="cat-tab-locked">🔒 ${cat.minFKS} FKS needed</div>`
+            : votedPlayer
+              ? `<div class="cat-tab-voted">✓ ${votedPlayer.name}</div>`
+              : ''}
+        `;
+        if (!isLocked) {
+          tab.addEventListener('click', () => openCategory(cat.id));
+        }
+        container.appendChild(tab);
+      });
+    }
+
+    function openCategory(catId) {
+      _activeCategory = catId;
+      _pendingVote = Storage.getVote(catId);
+      renderCategoryTabs();
+      renderVotePanel(catId);
+    }
+
+    function renderVotePanel(catId) {
+      const cat = App.getCategory(catId);
+      if (!cat) return;
+      const fks = Storage.getFKSTotal();
+      const isLocked = fks < cat.minFKS;
+      const currentVote = Storage.getVote(catId);
+      const col = Storage.getCollection();
+      const root = document.getElementById('vote-panel-root');
+
+      root.innerHTML = `
+        <div class="vote-panel">
+          <div class="vote-panel-header">
+            <div class="vote-panel-icon">${cat.icon}</div>
+            <div class="vote-panel-title">${cat.name}</div>
+            <div class="vote-panel-desc">${cat.description}</div>
+          </div>
+
+          <div class="vote-locked-msg ${isLocked ? 'show' : ''}">
+            🔒 This category requires ${cat.minFKS} FKS to vote. You have ${fks} FKS.
+            <a href="collection.html" style="color:var(--accent);margin-left:.3rem">Collect more cards →</a>
+          </div>
+
+          <div class="current-vote-summary ${currentVote ? 'show' : ''}">
+            <div class="current-vote-label">Your current vote</div>
+            <div class="current-vote-name">${currentVote ? (App.getPlayer(currentVote) || {}).name || '—' : '—'}</div>
+            <div style="font-size:.72rem;color:var(--text-3);margin-top:.2rem">Changing your vote automatically migrates your weight.</div>
+          </div>
+
+          <div class="vote-options" id="vote-options-grid"></div>
+
+          <div class="vote-submit-row">
+            <button class="btn btn-primary" id="submit-vote-btn" ${isLocked ? 'disabled' : ''}>
+              ${currentVote ? 'Change Vote' : 'Submit Vote'}
+            </button>
+            <span class="vote-weight-note">
+              Vote weight: <strong style="color:var(--accent)">${FKS.getVoteWeight(fks, App.getCards())}</strong> points
+            </span>
+          </div>
+        </div>
+      `;
+
+      // Render player options
+      const grid = document.getElementById('vote-options-grid');
+      cat.eligiblePlayers.forEach(playerId => {
+        const player = App.getPlayer(playerId);
+        if (!player) return;
+        const isOwned = App.getPlayerCards(playerId).some(c => (col[c.id] || 0) > 0);
+        const isSelected = _pendingVote === playerId;
+
+        const opt = document.createElement('div');
+        opt.className = `vote-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked-player' : ''}`;
+        opt.innerHTML = `
+          <div class="vote-opt-nation">${player.nationality}</div>
+          <div class="vote-opt-name">${player.name}</div>
+          <div class="vote-opt-pos">${player.position}</div>
+          <div class="vote-opt-era">${player.era}</div>
+          ${!isOwned ? '<span class="vote-opt-not-owned">No cards yet</span>' : ''}
+        `;
+        if (!isLocked) {
+          opt.addEventListener('click', () => {
+            _pendingVote = playerId;
+            renderVotePanel(catId);
+          });
+        }
+        grid.appendChild(opt);
+      });
+
+      // Submit
+      document.getElementById('submit-vote-btn').addEventListener('click', () => {
+        if (!_pendingVote || isLocked) return;
+        const prev = Storage.getVote(catId);
+        Storage.setVote(catId, _pendingVote);
+        const player = App.getPlayer(_pendingVote);
+        const msg = prev
+          ? `Vote changed to ${player.name}`
+          : `Voted for ${player.name}`;
+        UI.toast(`✅ ${msg}`, 'success');
+        renderCategoryTabs();
+        renderVotePanel(catId);
+        renderMyVotes();
+        renderWeightBanner();
+      });
+    }
+
+    function renderMyVotes() {
+      const container = document.getElementById('my-votes-list');
+      container.innerHTML = '';
+      const cats = App.getCategories();
+      const hasAny = cats.some(c => Storage.getVote(c.id));
+
+      if (!hasAny) {
+        container.innerHTML = '<div class="my-votes-empty">No votes cast yet. Select a category above to vote.</div>';
+        return;
+      }
+
+      cats.forEach(cat => {
+        const vote = Storage.getVote(cat.id);
+        if (!vote) return;
+        const player = App.getPlayer(vote);
+        const row = document.createElement('div');
+        row.className = 'my-vote-row';
+        row.innerHTML = `
+          <span class="my-vote-cat">${cat.icon} ${cat.name}</span>
+          <span class="my-vote-player">${player ? player.name : vote}</span>
+          <span class="my-vote-change" onclick="openCategory('${cat.id}')">Change</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+  </script>
+  <footer style="text-align:center;padding:1rem 1.5rem 2rem;font-size:.68rem;color:#3a4055;line-height:1.6">
+    Fan project · Educational purposes only · Not affiliated with FIFA, UEFA, any club or player<br>
+    Code: MIT Licence · Content: © 2025 GOAT League University Contributors, all rights reserved
+  </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .catch(e => console.warn("SW registration failed:", e));
+    }
+  </script>
+</body>
+</html>

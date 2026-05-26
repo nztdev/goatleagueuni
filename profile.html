@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — GOAT League University</title>
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <style>
+    /* ─── Profile hero ─── */
+    .profile-hero {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #c0392b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .profile-info { flex: 1; min-width: 160px; }
+    .profile-device-id {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--text-3);
+      margin-bottom: .4rem;
+    }
+    .profile-level-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: .04em;
+      line-height: 1.1;
+      margin-bottom: .4rem;
+    }
+    .profile-fks-row {
+      display: flex;
+      align-items: baseline;
+      gap: .5rem;
+      margin-bottom: .75rem;
+    }
+    .profile-fks-big {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .profile-fks-unit {
+      font-size: .8rem;
+      color: var(--text-3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .profile-bar-wrap { margin-top: .5rem; }
+    .profile-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: .7rem;
+      color: var(--text-3);
+      margin-bottom: .35rem;
+    }
+
+    /* ─── Level ladder ─── */
+    .level-ladder {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .level-ladder h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: 1rem;
+    }
+    .level-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .6rem .75rem;
+      border-radius: var(--radius);
+      margin-bottom: .3rem;
+      font-size: .85rem;
+      transition: var(--transition);
+    }
+    .level-row.current {
+      background: rgba(240,165,0,.07);
+      border: 1px solid rgba(240,165,0,.25);
+    }
+    .level-row.achieved { color: var(--text-2); }
+    .level-row.future { opacity: .4; }
+    .level-icon { font-size: 1.2rem; width: 1.5rem; text-align: center; }
+    .level-name { flex: 1; font-weight: 600; }
+    .level-range {
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--text-3);
+    }
+    .level-current-badge {
+      font-size: .65rem;
+      background: var(--accent);
+      color: #000;
+      border-radius: 3px;
+      padding: .1rem .4rem;
+      font-weight: 700;
+    }
+
+    /* ─── Stats grid ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: .75rem;
+      margin-bottom: 2rem;
+    }
+    .stat-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem;
+    }
+    .stat-block-value {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-block-label {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-3);
+      margin-top: .3rem;
+    }
+
+    /* ─── Player timelines ─── */
+    .timelines-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .timelines-section h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: 1rem;
+    }
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-color { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .timeline-name { font-size: .85rem; font-weight: 600; flex: 1; }
+    .timeline-bar-col { flex: 2; }
+    .timeline-mini-bar { height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; }
+    .timeline-mini-fill { height: 100%; border-radius: 2px; transition: width .8s ease; }
+    .timeline-count { font-family: var(--font-mono); font-size: .72rem; color: var(--text-3); width: 3rem; text-align: right; }
+    .timeline-complete-icon { font-size: .9rem; }
+
+    /* ─── Football philosophy ─── */
+    .philosophy-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .philosophy-section h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: .75rem;
+    }
+    .philosophy-bars { display: flex; flex-direction: column; gap: .6rem; }
+    .philosophy-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .philosophy-label { font-size: .78rem; width: 7rem; color: var(--text-2); flex-shrink: 0; }
+    .philosophy-bar-wrap { flex: 1; }
+    .philosophy-bar { height: 5px; background: var(--bg-3); border-radius: 3px; overflow: hidden; }
+    .philosophy-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+    .philosophy-pct { font-family: var(--font-mono); font-size: .7rem; color: var(--text-3); width: 2.5rem; text-align: right; }
+
+    /* ─── Votes section ─── */
+    .votes-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .votes-section h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: 1rem;
+    }
+    .vote-pill-grid { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .vote-pill {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: .3rem .85rem;
+      font-size: .78rem;
+      display: flex;
+      gap: .4rem;
+    }
+    .vote-pill-cat { color: var(--text-3); }
+    .vote-pill-player { color: var(--accent); font-weight: 600; }
+
+    /* ─── FKS log ─── */
+    .fks-log-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .fks-log-section h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .04em;
+      margin-bottom: 1rem;
+    }
+    .log-entry {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .4rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .8rem;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-amount { color: var(--accent); font-weight: 700; font-family: var(--font-mono); width: 3rem; text-align: right; flex-shrink: 0; }
+    .log-reason { color: var(--text-2); flex: 1; }
+    .log-time { color: var(--text-3); font-size: .7rem; white-space: nowrap; }
+
+    /* ─── Danger zone ─── */
+    .danger-zone {
+      background: var(--bg-2);
+      border: 1px solid rgba(192,57,43,.25);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .danger-zone h3 { font-size: 1rem; font-weight: 600; color: #e57373; margin-bottom: .5rem; }
+    .danger-zone p { font-size: .8rem; color: var(--text-3); margin-bottom: .75rem; }
+  </style>
+  <meta name="description" content="Track your Football Knowledge Score, level progress, completed timelines, and GOAT votes.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GOAT League University">
+  <meta property="og:title" content="Your Profile — GOAT League University">
+  <meta property="og:description" content="Track your Football Knowledge Score, level progress, completed timelines, and GOAT votes.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Your Profile — GOAT League University">
+  <meta name="twitter:description" content="Track your Football Knowledge Score, level progress, completed timelines, and GOAT votes.">
+</head>
+<body class="page">
+
+  <nav class="nav">
+    <div class="nav-brand">⚽ GOAT<span>League</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="collection.html" class="nav-link">Collection</a></li>
+      <li><a href="vote.html" class="nav-link">Vote</a></li>
+      <li><a href="leaderboard.html" class="nav-link">Leaderboard</a></li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <h1 class="section-title fade-up">Your Profile</h1>
+
+    <!-- Profile hero -->
+    <div class="profile-hero fade-up" style="animation-delay:.05s">
+      <div class="profile-avatar" id="profile-avatar">⚽</div>
+      <div class="profile-info">
+        <div class="profile-device-id" id="profile-device-id"></div>
+        <div class="profile-level-name fks-level">Rookie Fan</div>
+        <div class="profile-fks-row">
+          <div class="profile-fks-big fks-score">0</div>
+          <div class="profile-fks-unit">FKS</div>
+        </div>
+        <div class="profile-bar-wrap">
+          <div class="profile-bar-meta">
+            <span>Progress to next level</span>
+            <span id="profile-next-label">—</span>
+          </div>
+          <div class="fks-bar"><div class="fks-bar-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid fade-up" style="animation-delay:.1s" id="stats-grid"></div>
+
+    <!-- Level ladder -->
+    <div class="level-ladder fade-up" style="animation-delay:.12s">
+      <h3>Knowledge Ladder</h3>
+      <div id="level-ladder-rows"></div>
+    </div>
+
+    <!-- Timeline progress -->
+    <div class="timelines-section fade-up" style="animation-delay:.14s">
+      <h3>Player Timelines</h3>
+      <div id="timelines-rows"></div>
+    </div>
+
+    <!-- Football philosophy -->
+    <div class="philosophy-section fade-up" style="animation-delay:.16s">
+      <h3>Your Football Philosophy</h3>
+      <p class="text-muted" style="font-size:.8rem;margin-bottom:1rem">Derived from the players you've collected most.</p>
+      <div class="philosophy-bars" id="philosophy-bars"></div>
+    </div>
+
+    <!-- My votes -->
+    <div class="votes-section fade-up" style="animation-delay:.18s">
+      <h3>My Votes</h3>
+      <div class="vote-pill-grid" id="profile-votes"></div>
+    </div>
+
+    <!-- FKS log -->
+    <div class="fks-log-section fade-up" style="animation-delay:.2s">
+      <h3>Recent Knowledge Earned</h3>
+      <div id="fks-log"></div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="danger-zone fade-up" style="animation-delay:.22s">
+      <h3>⚠️ Reset Progress</h3>
+      <p>This permanently deletes all your cards, FKS, and votes. Cannot be undone.</p>
+      <button class="btn btn-ghost" id="reset-btn" style="border-color:rgba(192,57,43,.4);color:#e57373">Reset All Data</button>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-links">
+      <li><a href="index.html" class="bottom-nav-link"><span class="bnl-icon">🏠</span>Home</a></li>
+      <li><a href="collection.html" class="bottom-nav-link"><span class="bnl-icon">📦</span>Collect</a></li>
+      <li><a href="vote.html" class="bottom-nav-link"><span class="bnl-icon">🗳️</span>Vote</a></li>
+      <li><a href="leaderboard.html" class="bottom-nav-link"><span class="bnl-icon">📊</span>Board</a></li>
+      <li><a href="profile.html" class="bottom-nav-link"><span class="bnl-icon">👤</span>Profile</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/fks.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    UI.setActiveNav();
+
+    App.onReady(() => {
+      UI.updateFKSDisplay();
+      renderProfile();
+    });
+
+    function renderProfile() {
+      const fks = Storage.getFKSTotal();
+      const level = FKS.getLevel(fks);
+      const next = FKS.getNextLevel(fks);
+      const col = Storage.getCollection();
+      const allCards = App.getCards();
+      const players = App.getPlayers();
+
+      // Avatar emoji based on level
+      const avatarEmojis = ['⚽', '📖', '📚', '🔭', '🧠'];
+      const levelIdx = FKS.getAllLevels().findIndex(l => l.name === level.name);
+      document.getElementById('profile-avatar').textContent = avatarEmojis[Math.max(0, levelIdx)];
+      document.getElementById('profile-device-id').textContent = 'ID: ' + Storage.getDeviceId();
+
+      if (next) {
+        document.getElementById('profile-next-label').textContent = `${next.min - fks} pts to ${next.name}`;
+      } else {
+        document.getElementById('profile-next-label').textContent = 'Max level!';
+      }
+
+      // Stats
+      const trivia = Storage.getTriviaAnswered();
+      const triviaCorrect = Object.values(trivia).filter(v => v.correct).length;
+      const triviaTotal = Object.keys(trivia).length;
+      const playersSeen = new Set(allCards.filter(c => (col[c.id] || 0) > 0).map(c => c.playerId));
+      const totalCards = Object.keys(col).filter(k => col[k] > 0).length;
+      const weight = FKS.getVoteWeight(fks, allCards);
+      const completedTimelines = players.filter(p => App.getPlayerProgress(p.id).percent === 1).length;
+
+      const statsData = [
+        { value: totalCards, label: 'Cards Collected' },
+        { value: playersSeen.size, label: 'Players Studied' },
+        { value: triviaCorrect + '/' + triviaTotal, label: 'Trivia Correct' },
+        { value: completedTimelines, label: 'Timelines Done' },
+        { value: weight, label: 'Vote Weight' },
+        { value: FKS.getCompletedRivalries(allCards).length, label: 'Rivalries' },
+      ];
+      const statsGrid = document.getElementById('stats-grid');
+      statsGrid.innerHTML = '';
+      statsData.forEach(s => {
+        const block = document.createElement('div');
+        block.className = 'stat-block';
+        block.innerHTML = `<div class="stat-block-value">${s.value}</div><div class="stat-block-label">${s.label}</div>`;
+        statsGrid.appendChild(block);
+      });
+
+      // Level ladder
+      const ladderRoot = document.getElementById('level-ladder-rows');
+      ladderRoot.innerHTML = '';
+      FKS.getAllLevels().forEach(lvl => {
+        const isCurrent = lvl.name === level.name;
+        const isAchieved = fks >= lvl.min;
+        const row = document.createElement('div');
+        row.className = `level-row ${isCurrent ? 'current' : isAchieved ? 'achieved' : 'future'}`;
+        row.innerHTML = `
+          <span class="level-icon">${lvl.icon}</span>
+          <span class="level-name" style="color:${isCurrent ? lvl.color : 'inherit'}">${lvl.name}</span>
+          <span class="level-range">${lvl.min}${lvl.max === Infinity ? '+' : '–' + lvl.max}</span>
+          ${isCurrent ? '<span class="level-current-badge">YOU ARE HERE</span>' : ''}
+          ${isAchieved && !isCurrent ? '<span style="color:var(--green);font-size:.8rem">✓</span>' : ''}
+        `;
+        ladderRoot.appendChild(row);
+      });
+
+      // Timeline progress
+      const timelinesRoot = document.getElementById('timelines-rows');
+      timelinesRoot.innerHTML = '';
+      players.forEach(player => {
+        const prog = App.getPlayerProgress(player.id);
+        const isComplete = prog.percent === 1;
+        const row = document.createElement('div');
+        row.className = 'timeline-row';
+        row.innerHTML = `
+          <div class="timeline-color" style="background:${player.color}"></div>
+          <div class="timeline-name">${player.name}</div>
+          <div class="timeline-bar-col">
+            <div class="timeline-mini-bar">
+              <div class="timeline-mini-fill" style="width:${prog.percent*100}%;background:${player.color}"></div>
+            </div>
+          </div>
+          <div class="timeline-count">${prog.collected}/${prog.total}</div>
+          <div class="timeline-complete-icon">${isComplete ? '✅' : ''}</div>
+        `;
+        timelinesRoot.appendChild(row);
+      });
+
+      // Philosophy: count cards per philosophy type
+      const philoCounts = {};
+      allCards.forEach(card => {
+        if ((col[card.id] || 0) > 0) {
+          const player = App.getPlayer(card.playerId);
+          if (player && player.philosophy) {
+            philoCounts[player.philosophy] = (philoCounts[player.philosophy] || 0) + 1;
+          }
+        }
+      });
+      const philoTotal = Object.values(philoCounts).reduce((s, v) => s + v, 0) || 1;
+      const philoColors = { offensive: '#c0392b', tactical: '#2980b9', technical: '#8e44ad' };
+      const philoLabels = { offensive: '⚡ Attacking', tactical: '🧠 Tactical', technical: '✨ Technical' };
+      const philoBars = document.getElementById('philosophy-bars');
+      philoBars.innerHTML = '';
+      Object.entries(philoLabels).forEach(([key, label]) => {
+        const count = philoCounts[key] || 0;
+        const pct = Math.round((count / philoTotal) * 100);
+        const row = document.createElement('div');
+        row.className = 'philosophy-row';
+        row.innerHTML = `
+          <div class="philosophy-label">${label}</div>
+          <div class="philosophy-bar-wrap">
+            <div class="philosophy-bar">
+              <div class="philosophy-fill" style="width:${pct}%;background:${philoColors[key]}"></div>
+            </div>
+          </div>
+          <div class="philosophy-pct">${pct}%</div>
+        `;
+        philoBars.appendChild(row);
+      });
+      if (philoTotal === 1) {
+        philoBars.innerHTML = '<div class="text-muted" style="font-size:.82rem">Collect cards to reveal your football philosophy.</div>';
+      }
+
+      // Votes
+      const votesContainer = document.getElementById('profile-votes');
+      votesContainer.innerHTML = '';
+      const cats = App.getCategories();
+      const hasVotes = cats.some(c => Storage.getVote(c.id));
+      if (!hasVotes) {
+        votesContainer.innerHTML = '<div class="text-muted" style="font-size:.82rem">No votes cast yet. <a href="vote.html" style="color:var(--accent)">Vote now →</a></div>';
+      } else {
+        cats.forEach(cat => {
+          const vote = Storage.getVote(cat.id);
+          if (!vote) return;
+          const player = App.getPlayer(vote);
+          const pill = document.createElement('div');
+          pill.className = 'vote-pill';
+          pill.innerHTML = `<span class="vote-pill-cat">${cat.icon} ${cat.name}:</span><span class="vote-pill-player">${player ? player.name : vote}</span>`;
+          votesContainer.appendChild(pill);
+        });
+      }
+
+      // FKS log (last 15)
+      const logContainer = document.getElementById('fks-log');
+      logContainer.innerHTML = '';
+      const fksData = Storage.getFKS();
+      const recentLog = (fksData.log || []).slice(-15).reverse();
+      if (recentLog.length === 0) {
+        logContainer.innerHTML = '<div class="text-muted" style="font-size:.82rem">No FKS earned yet. Open a pack to start!</div>';
+      } else {
+        recentLog.forEach(entry => {
+          const row = document.createElement('div');
+          row.className = 'log-entry';
+          const ago = _timeAgo(entry.ts);
+          row.innerHTML = `
+            <div class="log-amount">+${entry.amount}</div>
+            <div class="log-reason">${entry.reason}</div>
+            <div class="log-time">${ago}</div>
+          `;
+          logContainer.appendChild(row);
+        });
+      }
+
+      // Reset
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        if (confirm('Reset all data? This cannot be undone.')) {
+          Storage.reset();
+          localStorage.removeItem('fgg_milestones');
+          localStorage.removeItem('fgg_pity');
+          window.location.href = 'index.html';
+        }
+      });
+    }
+
+    function _timeAgo(ts) {
+      const diff = Date.now() - ts;
+      const m = Math.floor(diff / 60000);
+      const h = Math.floor(diff / 3600000);
+      const d = Math.floor(diff / 86400000);
+      if (d > 0) return `${d}d ago`;
+      if (h > 0) return `${h}h ago`;
+      if (m > 0) return `${m}m ago`;
+      return 'just now';
+    }
+  </script>
+  <footer style="text-align:center;padding:1rem 1.5rem 2rem;font-size:.68rem;color:#3a4055;line-height:1.6">
+    Fan project · Educational purposes only · Not affiliated with FIFA, UEFA, any club or player<br>
+    Code: MIT Licence · Content: © 2025 GOAT League University Contributors, all rights reserved
+  </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .catch(e => console.warn("SW registration failed:", e));
+    }
+  </script>
+</body>
+</html>

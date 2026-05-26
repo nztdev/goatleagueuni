@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — GOAT League University</title>
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <style>
+    /* ─── Category selector ─── */
+    .cat-selector {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .cat-pill {
+      padding: .4rem .9rem;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .cat-pill:hover { border-color: var(--border-2); color: var(--text); }
+    .cat-pill.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+    /* ─── Leaderboard card ─── */
+    .lb-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      animation: fadeUp .4s ease both;
+    }
+    .lb-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .lb-cat-icon { font-size: 1.8rem; }
+    .lb-cat-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: .04em;
+    }
+    .lb-cat-desc { font-size: .8rem; color: var(--text-2); margin-top: .1rem; }
+    .lb-your-vote {
+      margin-left: auto;
+      font-size: .75rem;
+      color: var(--accent);
+      background: rgba(240,165,0,.1);
+      border: 1px solid rgba(240,165,0,.2);
+      border-radius: var(--radius);
+      padding: .3rem .65rem;
+      white-space: nowrap;
+    }
+
+    /* ─── Rank entries ─── */
+    .lb-entries { padding: .5rem 0; }
+    .lb-entry {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+      position: relative;
+    }
+    .lb-entry:last-child { border-bottom: none; }
+    .lb-entry:hover { background: var(--bg-3); }
+    .lb-entry.is-voted {
+      background: rgba(240,165,0,.04);
+      border-left: 3px solid var(--accent);
+    }
+
+    .lb-rank {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      width: 2.2rem;
+      text-align: center;
+      flex-shrink: 0;
+      color: var(--text-3);
+      line-height: 1;
+    }
+    .lb-rank-1 { color: #f0a500; }
+    .lb-rank-2 { color: #a8a8b3; }
+    .lb-rank-3 { color: #cd7f32; }
+
+    .lb-player-info { flex: 1; min-width: 0; }
+    .lb-player-name { font-weight: 700; font-size: .95rem; }
+    .lb-player-meta { font-size: .72rem; color: var(--text-3); margin-top: .1rem; }
+
+    .lb-bar-col { flex: 2; min-width: 100px; }
+    .lb-bar {
+      height: 6px;
+      background: var(--bg-3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .lb-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s cubic-bezier(.25,.8,.25,1);
+    }
+
+    .lb-pct {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      color: var(--text-2);
+      width: 3.5rem;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .lb-voted-badge {
+      font-size: .6rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(240,165,0,.12);
+      border-radius: 3px;
+      padding: .1rem .35rem;
+      white-space: nowrap;
+    }
+
+    /* ─── Rivalry spotlight ─── */
+    .rivalry-section { margin-bottom: 2.5rem; }
+    .rivalry-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: .05em;
+      margin-bottom: 1rem;
+    }
+    .rivalry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: .75rem;
+    }
+    .rivalry-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .rivalry-names {
+      font-weight: 700;
+      font-size: .9rem;
+      flex: 1;
+    }
+    .rivalry-vs { color: var(--text-3); font-size: .75rem; margin: .1rem 0; }
+    .rivalry-complete-badge {
+      font-size: .65rem;
+      color: var(--green);
+      background: rgba(39,174,96,.1);
+      border: 1px solid rgba(39,174,96,.2);
+      border-radius: 3px;
+      padding: .15rem .4rem;
+      font-weight: 700;
+    }
+    .rivalry-locked-badge {
+      font-size: .65rem;
+      color: var(--text-3);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: .15rem .4rem;
+    }
+
+    /* ─── Knowledge impact ─── */
+    .knowledge-note {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      font-size: .85rem;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+    .knowledge-note strong { color: var(--text); }
+  </style>
+  <meta name="description" content="Live GOAT rankings across 8 categories. Updated as the community learns more.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GOAT League University">
+  <meta property="og:title" content="Live Rankings — GOAT League University">
+  <meta property="og:description" content="Live GOAT rankings across 8 categories. Updated as the community learns more.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Live Rankings — GOAT League University">
+  <meta name="twitter:description" content="Live GOAT rankings across 8 categories. Updated as the community learns more.">
+</head>
+<body class="page">
+
+  <nav class="nav">
+    <div class="nav-brand">⚽ GOAT<span>League</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="collection.html" class="nav-link">Collection</a></li>
+      <li><a href="vote.html" class="nav-link">Vote</a></li>
+      <li><a href="leaderboard.html" class="nav-link">Leaderboard</a></li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <h1 class="section-title fade-up">Live Rankings</h1>
+    <p class="text-muted fade-up" style="margin-bottom:1.5rem;animation-delay:.05s">
+      Rankings evolve as the community learns more. Higher knowledge → higher vote weight → more influence.
+    </p>
+
+    <!-- Knowledge impact note -->
+    <div class="knowledge-note fade-up" style="animation-delay:.08s">
+      <strong>How rankings work:</strong> Each vote carries weight equal to the voter's FKS multiplied by their breadth multiplier (up to 100% for 7+ players studied). Rankings shift as users collect more cards and update their votes — meaning <strong>education literally changes the result</strong>.
+    </div>
+
+    <!-- Category pills -->
+    <div class="cat-selector fade-up" style="animation-delay:.1s" id="cat-selector"></div>
+
+    <!-- Leaderboard output -->
+    <div id="lb-root"></div>
+
+    <!-- Rivalry spotlight -->
+    <div class="rivalry-section fade-up" style="animation-delay:.15s">
+      <h2>⚔️ Rivalry Spotlight</h2>
+      <p class="text-muted" style="font-size:.82rem;margin-bottom:1rem">Complete both players' timelines to unlock rivalry bonuses.</p>
+      <div class="rivalry-grid" id="rivalry-grid"></div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-links">
+      <li><a href="index.html" class="bottom-nav-link"><span class="bnl-icon">🏠</span>Home</a></li>
+      <li><a href="collection.html" class="bottom-nav-link"><span class="bnl-icon">📦</span>Collect</a></li>
+      <li><a href="vote.html" class="bottom-nav-link"><span class="bnl-icon">🗳️</span>Vote</a></li>
+      <li><a href="leaderboard.html" class="bottom-nav-link"><span class="bnl-icon">📊</span>Board</a></li>
+      <li><a href="profile.html" class="bottom-nav-link"><span class="bnl-icon">👤</span>Profile</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/fks.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    UI.setActiveNav();
+    let _activeCat = 'overall';
+
+    App.onReady(() => {
+      renderCatSelector();
+      renderLeaderboard(_activeCat);
+      renderRivalries();
+    });
+
+    function renderCatSelector() {
+      const container = document.getElementById('cat-selector');
+      container.innerHTML = '';
+      App.getCategories().forEach(cat => {
+        const pill = document.createElement('button');
+        pill.className = `cat-pill ${_activeCat === cat.id ? 'active' : ''}`;
+        pill.textContent = `${cat.icon} ${cat.name}`;
+        pill.addEventListener('click', () => {
+          _activeCat = cat.id;
+          renderCatSelector();
+          renderLeaderboard(cat.id);
+        });
+        container.appendChild(pill);
+      });
+    }
+
+    function renderLeaderboard(catId) {
+      const cat = App.getCategory(catId);
+      if (!cat) return;
+      const leaders = App.getCategoryLeaderboard(catId);
+      const userVote = Storage.getVote(catId);
+      const userPlayer = userVote ? App.getPlayer(userVote) : null;
+      const root = document.getElementById('lb-root');
+      root.innerHTML = '';
+
+      const card = document.createElement('div');
+      card.className = 'lb-card';
+
+      // Header
+      const header = document.createElement('div');
+      header.className = 'lb-card-header';
+      header.innerHTML = `
+        <span class="lb-cat-icon">${cat.icon}</span>
+        <div>
+          <div class="lb-cat-title">${cat.name}</div>
+          <div class="lb-cat-desc">${cat.description}</div>
+        </div>
+        ${userPlayer ? `<div class="lb-your-vote">Your vote: ${userPlayer.name}</div>` : ''}
+      `;
+      card.appendChild(header);
+
+      // Entries
+      const entries = document.createElement('div');
+      entries.className = 'lb-entries';
+
+      const RANK_MEDALS = ['🥇', '🥈', '🥉'];
+      const barColors = [
+        'linear-gradient(90deg, #f0a500, #e0b400)',
+        'linear-gradient(90deg, #5b9bd5, #4a90d9)',
+        'linear-gradient(90deg, #7f8c8d, #95a5a6)',
+        'var(--border-2)',
+        'var(--border-2)',
+      ];
+
+      leaders.forEach((item, i) => {
+        const entry = document.createElement('div');
+        entry.className = `lb-entry ${item.isUserVote ? 'is-voted' : ''}`;
+
+        const rankClass = i === 0 ? 'lb-rank-1' : i === 1 ? 'lb-rank-2' : i === 2 ? 'lb-rank-3' : '';
+        const rankDisplay = i < 3 ? RANK_MEDALS[i] : `#${i+1}`;
+
+        entry.innerHTML = `
+          <div class="lb-rank ${rankClass}">${rankDisplay}</div>
+          <div class="lb-player-info">
+            <div class="lb-player-name">${item.player.name}</div>
+            <div class="lb-player-meta">${item.player.nationality} · ${item.player.position} · ${item.player.era}</div>
+          </div>
+          <div class="lb-bar-col">
+            <div class="lb-bar">
+              <div class="lb-bar-fill" style="width:0%;background:${barColors[Math.min(i, barColors.length-1)]}"></div>
+            </div>
+          </div>
+          <div class="lb-pct">${item.percent}%</div>
+          ${item.isUserVote ? '<span class="lb-voted-badge">YOUR VOTE</span>' : ''}
+        `;
+        entries.appendChild(entry);
+
+        // Animate bar
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const fill = entry.querySelector('.lb-bar-fill');
+            if (fill) fill.style.width = item.percent + '%';
+          }, 100 + i * 80);
+        });
+      });
+
+      card.appendChild(entries);
+      root.appendChild(card);
+
+      // Insight line
+      if (leaders.length > 0) {
+        const insight = document.createElement('div');
+        insight.style.cssText = 'font-size:.78rem;color:var(--text-3);margin-bottom:2rem;padding:0 .25rem';
+        const leader = leaders[0];
+        const gap = leaders.length > 1 ? (parseFloat(leader.percent) - parseFloat(leaders[1].percent)).toFixed(1) : 0;
+        insight.textContent = `${leader.player.name} leads by ${gap}% — rankings update as the community learns more.`;
+        root.appendChild(insight);
+      }
+    }
+
+    function renderRivalries() {
+      const grid = document.getElementById('rivalry-grid');
+      grid.innerHTML = '';
+      const rivalries = FKS.getAllRivalries();
+      const completedRivalries = FKS.getCompletedRivalries(App.getCards());
+      const completedKeys = completedRivalries.map(([a, b]) => `${a}_${b}`);
+
+      rivalries.forEach(([idA, idB]) => {
+        const playerA = App.getPlayer(idA);
+        const playerB = App.getPlayer(idB);
+        if (!playerA || !playerB) return;
+
+        const isComplete = completedKeys.includes(`${idA}_${idB}`);
+        const progA = App.getPlayerProgress(idA);
+        const progB = App.getPlayerProgress(idB);
+
+        const card = document.createElement('div');
+        card.className = 'rivalry-card';
+        card.innerHTML = `
+          <div style="font-size:1.5rem">${isComplete ? '⚔️' : '🔒'}</div>
+          <div class="rivalry-names">
+            <div>${playerA.name}</div>
+            <div class="rivalry-vs">vs</div>
+            <div>${playerB.name}</div>
+            ${!isComplete ? `<div style="font-size:.65rem;color:var(--text-3);margin-top:.3rem">${progA.collected}/${progA.total} · ${progB.collected}/${progB.total} cards</div>` : ''}
+          </div>
+          ${isComplete
+            ? '<span class="rivalry-complete-badge">✅ Unlocked</span>'
+            : '<span class="rivalry-locked-badge">In Progress</span>'}
+        `;
+        grid.appendChild(card);
+      });
+    }
+  </script>
+  <footer style="text-align:center;padding:1rem 1.5rem 2rem;font-size:.68rem;color:#3a4055;line-height:1.6">
+    Fan project · Educational purposes only · Not affiliated with FIFA, UEFA, any club or player<br>
+    Code: MIT Licence · Content: © 2025 GOAT League University Contributors, all rights reserved
+  </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .catch(e => console.warn("SW registration failed:", e));
+    }
+  </script>
+</body>
+</html>

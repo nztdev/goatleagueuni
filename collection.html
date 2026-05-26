@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection — GOAT League University</title>
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <style>
+    /* ─── Pull section ─── */
+    .pull-section {
+      background: linear-gradient(135deg, #1a1400 0%, var(--bg-2) 100%);
+      border: 1px solid rgba(240,165,0,.2);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    .pull-section h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: .05em;
+      margin-bottom: .5rem;
+    }
+    .pull-section p { font-size: .85rem; color: var(--text-2); margin-bottom: 1.5rem; }
+    .pull-cost {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .75rem;
+      color: var(--text-3);
+      margin-bottom: 1rem;
+    }
+
+    /* ─── Pull result overlay ─── */
+    .pull-result-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.95);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .pull-result-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .pull-result-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: .1em;
+      color: var(--accent);
+    }
+    .pull-cards-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 700px;
+      padding: 0 1rem;
+    }
+    .pull-card-item {
+      width: 110px;
+      background: var(--bg-2);
+      border-radius: var(--radius-lg);
+      padding: .75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      opacity: 0;
+    }
+    .pull-card-item.rarity-legendary { border: 1px solid var(--accent); }
+    .pull-card-item.rarity-epic { border: 1px solid #9b59b6; }
+    .pull-card-item.rarity-rare { border: 1px solid #4a90d9; }
+    .pull-card-item.rarity-common { border: 1px solid var(--border); }
+    .pull-card-player { font-size: .6rem; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .pull-card-title { font-size: .75rem; font-weight: 600; line-height: 1.3; }
+    .pull-card-rarity { font-size: .65rem; font-weight: 700; text-transform: uppercase; margin-top: auto; }
+    .pull-card-new {
+      font-size: .6rem;
+      background: var(--accent);
+      color: #000;
+      border-radius: 3px;
+      padding: .1rem .35rem;
+      font-weight: 700;
+      display: inline-block;
+      width: fit-content;
+    }
+    .pull-fks-earned {
+      font-family: var(--font-mono);
+      font-size: .85rem;
+      color: var(--accent);
+      text-align: center;
+    }
+    .pull-close-btn {
+      padding: .75rem 2rem;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .pull-close-btn:hover { background: var(--border-2); }
+
+    /* ─── Player filter tabs ─── */
+    .filter-tabs {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .filter-tab {
+      padding: .35rem .85rem;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-tab:hover { border-color: var(--text-2); color: var(--text); }
+    .filter-tab.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+    /* ─── Player section ─── */
+    .player-section {
+      margin-bottom: 2.5rem;
+    }
+    .player-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .player-info { display: flex; align-items: center; gap: .75rem; }
+    .player-color-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .player-section-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: .04em;
+    }
+    .player-meta { font-size: .75rem; color: var(--text-3); }
+    .player-progress-text {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .player-progress-bar {
+      height: 3px;
+      background: var(--bg-3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .player-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width .6s ease;
+    }
+    .player-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: .75rem;
+    }
+
+    /* ─── Timeline complete badge ─── */
+    .timeline-complete {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .7rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(240,165,0,.1);
+      border: 1px solid rgba(240,165,0,.3);
+      border-radius: 20px;
+      padding: .2rem .6rem;
+    }
+
+    /* ─── Overall progress ─── */
+    .overall-progress {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .overall-progress-label { font-size: .8rem; color: var(--text-2); flex: 1; min-width: 120px; }
+    .overall-progress-bar-wrap { flex: 3; min-width: 160px; }
+    .overall-count {
+      font-family: var(--font-mono);
+      font-size: .85rem;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+  </style>
+  <meta name="description" content="Pull cards, complete player timelines, and unlock the stories behind football's greatest players.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GOAT League University">
+  <meta property="og:title" content="Your Collection — GOAT League University">
+  <meta property="og:description" content="Pull cards, complete player timelines, and unlock the stories behind football's greatest players.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Your Collection — GOAT League University">
+  <meta name="twitter:description" content="Pull cards, complete player timelines, and unlock the stories behind football's greatest players.">
+</head>
+<body class="page">
+
+  <nav class="nav">
+    <div class="nav-brand">⚽ GOAT<span>League</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="collection.html" class="nav-link">Collection</a></li>
+      <li><a href="vote.html" class="nav-link">Vote</a></li>
+      <li><a href="leaderboard.html" class="nav-link">Leaderboard</a></li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <h1 class="section-title fade-up">Your Collection</h1>
+
+    <!-- Overall progress -->
+    <div class="overall-progress fade-up" style="animation-delay:.05s">
+      <div class="overall-progress-label">Total collection progress</div>
+      <div class="overall-progress-bar-wrap">
+        <div class="fks-bar"><div class="fks-bar-fill" id="overall-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="overall-count" id="overall-count">0 / 100</div>
+    </div>
+
+    <!-- Pull section -->
+    <div class="pull-section fade-up" style="animation-delay:.1s">
+      <h2>Open a Pack</h2>
+      <p>5 cards per pack — new pack every 6 hours. Guaranteed no duplicates until you own every card.</p>
+      <div class="pull-cost">
+        Free · <span id="fks-score-small" class="text-accent">0 FKS</span>
+      </div>
+      <button class="btn btn-primary" id="pull-btn" style="font-size:1.05rem;padding:.85rem 2rem">
+        Pull 5 Cards
+      </button>
+      <div id="pack-timer-col" style="font-size:.75rem;color:var(--text-3);margin-top:.75rem"></div>
+    </div>
+
+    <!-- Player filter -->
+    <div class="filter-tabs fade-up" style="animation-delay:.15s" id="player-filters"></div>
+
+    <!-- Collection grid -->
+    <div id="collection-root"></div>
+  </main>
+
+  <!-- Pull result overlay -->
+  <div class="pull-result-overlay" id="pull-overlay">
+    <div class="pull-result-title">Pack Opened!</div>
+    <div class="pull-cards-grid" id="pull-cards-grid"></div>
+    <div class="pull-fks-earned" id="pull-fks-earned"></div>
+    <button class="pull-close-btn" id="pull-close">Continue →</button>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-links">
+      <li><a href="index.html" class="bottom-nav-link"><span class="bnl-icon">🏠</span>Home</a></li>
+      <li><a href="collection.html" class="bottom-nav-link"><span class="bnl-icon">📦</span>Collect</a></li>
+      <li><a href="vote.html" class="bottom-nav-link"><span class="bnl-icon">🗳️</span>Vote</a></li>
+      <li><a href="leaderboard.html" class="bottom-nav-link"><span class="bnl-icon">📊</span>Board</a></li>
+      <li><a href="profile.html" class="bottom-nav-link"><span class="bnl-icon">👤</span>Profile</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/fks.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    UI.setActiveNav();
+    let _currentFilter = 'all';
+
+    App.onReady(() => {
+      renderAll();
+      setupPull();
+    });
+
+    function renderAll() {
+      UI.updateFKSDisplay();
+      document.getElementById('fks-score-small').textContent = Storage.getFKSTotal() + ' FKS';
+
+      // Overall progress
+      const prog = App.getOverallProgress();
+      document.getElementById('overall-progress-bar').style.width = (prog.percent * 100) + '%';
+      document.getElementById('overall-count').textContent = `${prog.collected} / ${prog.total}`;
+
+      // Filters
+      const filterContainer = document.getElementById('player-filters');
+      filterContainer.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.className = `filter-tab ${_currentFilter === 'all' ? 'active' : ''}`;
+      allBtn.textContent = 'All Players';
+      allBtn.onclick = () => { _currentFilter = 'all'; renderAll(); };
+      filterContainer.appendChild(allBtn);
+
+      App.getPlayers().forEach(p => {
+        const prog = App.getPlayerProgress(p.id);
+        const btn = document.createElement('button');
+        btn.className = `filter-tab ${_currentFilter === p.id ? 'active' : ''}`;
+        btn.textContent = `${p.name} ${prog.collected}/${prog.total}`;
+        btn.onclick = () => { _currentFilter = p.id; renderAll(); };
+        filterContainer.appendChild(btn);
+      });
+
+      // Collection grid
+      const root = document.getElementById('collection-root');
+      root.innerHTML = '';
+      const players = _currentFilter === 'all' ? App.getPlayers() : App.getPlayers().filter(p => p.id === _currentFilter);
+
+      players.forEach(player => {
+        const cards = App.getPlayerCards(player.id);
+        const progress = App.getPlayerProgress(player.id);
+        const isComplete = progress.collected === progress.total && progress.total > 0;
+
+        const section = document.createElement('div');
+        section.className = 'player-section fade-up';
+
+        const header = document.createElement('div');
+        header.className = 'player-section-header';
+        header.innerHTML = `
+          <div class="player-info">
+            <div class="player-color-dot" style="background:${player.color}"></div>
+            <div>
+              <div class="player-section-name">${player.name}</div>
+              <div class="player-meta">${player.nationality} · ${player.position} · ${player.era}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            ${isComplete ? '<span class="timeline-complete">✅ Timeline Complete</span>' : ''}
+            <span class="player-progress-text">${progress.collected}/${progress.total}</span>
+          </div>
+        `;
+
+        const progressBar = document.createElement('div');
+        progressBar.className = 'player-progress-bar';
+        progressBar.innerHTML = `<div class="player-progress-fill" style="width:${progress.percent * 100}%;background:${player.color}"></div>`;
+
+        const grid = document.createElement('div');
+        grid.className = 'player-cards-grid';
+
+        const col = Storage.getCollection();
+        cards.forEach((card, i) => {
+          const isOwned = (col[card.id] || 0) > 0;
+          const mini = UI.renderCardMini(card, player, isOwned);
+          mini.style.animationDelay = (i * 0.04) + 's';
+          if (isOwned) {
+            mini.addEventListener('click', () => UI.openCardModal(card, player));
+          }
+          grid.appendChild(mini);
+        });
+
+        section.appendChild(header);
+        section.appendChild(progressBar);
+        section.appendChild(grid);
+        root.appendChild(section);
+      });
+    }
+
+    function setupPull() {
+      const btn = document.getElementById('pull-btn');
+      const timerEl = document.getElementById('pack-timer-col');
+
+      function updatePullBtn() {
+        if (Storage.canOpenPack()) {
+          btn.disabled = false;
+          btn.classList.add('btn-pull-ready');
+          timerEl.textContent = '';
+        } else {
+          btn.disabled = true;
+          btn.classList.remove('btn-pull-ready');
+          const endTime = Date.now() + Storage.timeUntilNextPack();
+          timerEl.innerHTML = 'Next pack in: ';
+          const span = document.createElement('span');
+          timerEl.appendChild(span);
+          UI.startCountdown(endTime, span);
+        }
+      }
+
+      updatePullBtn();
+
+      btn.addEventListener('click', () => {
+        if (!Storage.canOpenPack()) return;
+        if (AntiCheat.isPullSuspicious()) {
+          UI.toast('Please wait a moment before pulling again.', 'error');
+          return;
+        }
+
+        const fksBefore = Storage.getFKSTotal();
+        const pulled = Gacha.pull(App.getCards());
+        const fksAfter = Storage.getFKSTotal();
+        const earned = fksAfter - fksBefore;
+
+        showPullResult(pulled, earned);
+        updatePullBtn();
+        renderAll();
+      });
+
+      document.getElementById('pull-close').addEventListener('click', () => {
+        document.getElementById('pull-overlay').classList.remove('show');
+      });
+    }
+
+    function showPullResult(cards, fksEarned) {
+      const overlay = document.getElementById('pull-overlay');
+      const grid = document.getElementById('pull-cards-grid');
+      const fksLabel = document.getElementById('pull-fks-earned');
+
+      grid.innerHTML = '';
+      fksLabel.textContent = `+${fksEarned} FKS earned`;
+
+      const col = Storage.getCollection();
+      cards.forEach((card, i) => {
+        const player = App.getPlayer(card.playerId);
+        const wasNew = (col[card.id] || 0) === 1; // just added
+        const rarityColor = Gacha.getRarityColor(card.rarity);
+        const el = document.createElement('div');
+        el.className = `pull-card-item rarity-${card.rarity} pull-card-reveal`;
+        el.style.animationDelay = (i * 0.12 + 0.1) + 's';
+        el.innerHTML = `
+          <div class="pull-card-player">${player ? player.name : ''}</div>
+          <div class="pull-card-title">${card.title}</div>
+          <div class="pull-card-rarity" style="color:${rarityColor}">${Gacha.getRarityLabel(card.rarity)}</div>
+          ${wasNew ? '<span class="pull-card-new">NEW</span>' : '<span style="font-size:.6rem;color:var(--text-3)">Duplicate</span>'}
+        `;
+        grid.appendChild(el);
+      });
+
+      overlay.classList.add('show');
+
+      // Check for legendary
+      if (cards.some(c => c.rarity === 'legendary')) {
+        UI.toast('🌟 Legendary card pulled!', 'success', 4000);
+      }
+    }
+  </script>
+  <footer style="text-align:center;padding:1rem 1.5rem 2rem;font-size:.68rem;color:#3a4055;line-height:1.6">
+    Fan project · Educational purposes only · Not affiliated with FIFA, UEFA, any club or player<br>
+    Code: MIT Licence · Content: © 2025 GOAT League University Contributors, all rights reserved
+  </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .catch(e => console.warn("SW registration failed:", e));
+    }
+  </script>
+</body>
+</html>
