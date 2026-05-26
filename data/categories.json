@@ -1,0 +1,66 @@
+[
+  {
+    "id": "overall",
+    "name": "Overall GOAT",
+    "description": "The greatest footballer of all time, across all dimensions.",
+    "icon": "🐐",
+    "minFKS": 0,
+    "eligiblePlayers": ["pele", "maradona", "cruyff", "beckenbauer", "zidane", "ronaldinho", "ronaldo_r7", "messi", "ronaldo_cr7", "iniesta"]
+  },
+  {
+    "id": "attacker",
+    "name": "Attacker GOAT",
+    "description": "The greatest forward, striker, or winger to ever play the game.",
+    "icon": "⚡",
+    "minFKS": 20,
+    "eligiblePlayers": ["pele", "maradona", "cruyff", "ronaldinho", "ronaldo_r7", "messi", "ronaldo_cr7"]
+  },
+  {
+    "id": "midfielder",
+    "name": "Midfielder GOAT",
+    "description": "The greatest central or attacking midfielder in football history.",
+    "icon": "🎯",
+    "minFKS": 20,
+    "eligiblePlayers": ["cruyff", "zidane", "ronaldinho", "iniesta", "maradona", "beckenbauer"]
+  },
+  {
+    "id": "defender",
+    "name": "Defender GOAT",
+    "description": "The greatest defender the sport has ever produced.",
+    "icon": "🛡️",
+    "minFKS": 30,
+    "eligiblePlayers": ["beckenbauer", "cruyff", "iniesta"]
+  },
+  {
+    "id": "bigMatch",
+    "name": "Best Big Match Player",
+    "description": "Who performed most when the stakes were highest — finals, semi-finals, decisive moments.",
+    "icon": "🏆",
+    "minFKS": 50,
+    "eligiblePlayers": ["pele", "maradona", "zidane", "ronaldo_r7", "messi", "ronaldo_cr7", "iniesta", "beckenbauer"]
+  },
+  {
+    "id": "technical",
+    "name": "Most Technical",
+    "description": "Pure skill — dribbling, touch, close control, technique beyond what physics should allow.",
+    "icon": "✨",
+    "minFKS": 30,
+    "eligiblePlayers": ["maradona", "cruyff", "zidane", "ronaldinho", "messi", "iniesta", "ronaldo_r7"]
+  },
+  {
+    "id": "leader",
+    "name": "Best Leader",
+    "description": "Who elevated those around them most — on and off the pitch.",
+    "icon": "👑",
+    "minFKS": 40,
+    "eligiblePlayers": ["pele", "beckenbauer", "zidane", "ronaldo_cr7", "cruyff", "maradona"]
+  },
+  {
+    "id": "influential",
+    "name": "Most Influential",
+    "description": "Who changed football most — tactically, culturally, historically.",
+    "icon": "🌍",
+    "minFKS": 60,
+    "eligiblePlayers": ["pele", "cruyff", "beckenbauer", "maradona", "ronaldinho", "messi"]
+  }
+]
